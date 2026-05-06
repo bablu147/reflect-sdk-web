@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflect Web SDK — Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0b0e13; color: #fff; padding: 20px; }
+    h1 { font-size: 24px; margin-bottom: 4px; }
+    .subtitle { color: #888; font-size: 14px; margin-bottom: 20px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .card-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+    .mono { font-family: monospace; font-size: 12px; color: #aaa; margin-bottom: 4px; }
+    .btn { display: block; width: 100%; background: #238636; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+    .btn:hover { background: #2ea043; }
+    .btn.secondary { background: #333; }
+    .log-entry { font-family: monospace; font-size: 11px; color: #666; margin-bottom: 2px; }
+    #log { max-height: 300px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <h1>Reflect Web SDK Demo</h1>
+  <p class="subtitle">Browser / JavaScript</p>
+
+  <div class="card">
+    <div class="card-title">Status</div>
+    <div class="mono" id="status-uuid">UUID: loading...</div>
+    <div class="mono" id="status-session">Session: loading...</div>
+    <div class="mono" id="status-utm">UTM: none</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Track Events</div>
+    <button class="btn" onclick="trackSignup()">Track: signup</button>
+    <button class="btn" onclick="trackPurchase()">Track: purchase ($9.99)</button>
+    <button class="btn" onclick="trackPageView()">Track: page_view</button>
+    <button class="btn" onclick="setUser()">Set User ID</button>
+    <button class="btn secondary" onclick="flushEvents()">Flush</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Log</div>
+    <div id="log">
+      <div class="log-entry">No events yet</div>
+    </div>
+  </div>
+
+  <!-- Load the SDK (UMD build) -->
+  <script src="../dist/reflect-web.umd.js"></script>
+  <script>
+    // Initialize
+    ReflectWeb.initialize({
+      appKey: 'YOUR_APP_KEY',
+      debug: true,
+      autoPageView: true,
+    });
+
+    // Update status
+    document.getElementById('status-uuid').textContent = 'UUID: ' + ReflectWeb.getInstallUuid();
+    document.getElementById('status-session').textContent = 'Session: ' + ReflectWeb.getWebSessionId();
+
+    const params = new URLSearchParams(location.search);
+    const utm = ['utm_source','utm_medium','utm_campaign'].map(k => params.get(k)).filter(Boolean).join(' / ');
+    document.getElementById('status-utm').textContent = 'UTM: ' + (utm || 'none');
+
+    function addLog(msg) {
+      const el = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+      el.prepend(entry);
+    }
+
+    function trackSignup() {
+      ReflectWeb.trackEvent('signup', { plan: 'pro', source: 'landing_page' });
+      addLog('Tracked: signup');
+    }
+
+    function trackPurchase() {
+      ReflectWeb.trackEvent('purchase', { amount: 9.99, currency: 'USD', product: 'premium_annual' });
+      addLog('Tracked: purchase $9.99');
+    }
+
+    function trackPageView() {
+      ReflectWeb.trackPageView();
+      addLog('Tracked: page_view');
+    }
+
+    function setUser() {
+      ReflectWeb.setUserId('user_web_12345');
+      ReflectWeb.setUserProperties({ tier: 'premium', signup_source: 'web' });
+      addLog('Set user: user_web_12345');
+    }
+
+    function flushEvents() {
+      ReflectWeb.flush();
+      addLog('Flushed');
+    }
+  </script>
+</body>
+</html>

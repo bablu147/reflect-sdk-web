@@ -1,0 +1,37 @@
+{
+  "name": "@reflect-sdk/web",
+  "version": "1.0.0",
+  "description": "Reflect MMP Web SDK — session tracking, UTM capture, web-to-app attribution, and cross-domain tracking.",
+  "main": "dist/reflect-web.umd.js",
+  "module": "dist/reflect-web.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "reflect",
+    "mmp",
+    "attribution",
+    "analytics",
+    "web-sdk",
+    "utm"
+  ],
+  "author": "Retroage Engineering <hello@retroage.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/retroage/reflect-sdk-web"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.9.0",
+    "tslib": "^2.6.0",
+    "typescript": "^5.3.0"
+  }
+}
